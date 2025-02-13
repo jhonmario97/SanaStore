@@ -1,0 +1,6 @@
+@SanaTest_HostAddress = http://localhost:5245
+
+GET {{SanaTest_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
