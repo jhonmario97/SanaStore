@@ -1,0 +1,292 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+.image-container {
+  width: 200px; /* Adjust the size as needed */
+  height: 200px; /* Should be the same as width for a square */
+  overflow: hidden;
+  position: relative;
+  border-radius: 10px; /* Optional: for rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: for a subtle shadow */
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures the image covers the area without distortion */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f9;
+  color: #333;
+}
+
+/* Navigation Bar */
+nav {
+  background-color: #141d2b;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-around;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+nav a:hover {
+  background-color: #000000;
+}
+
+.catalog {
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Three columns per row */
+  gap: 1.5rem; /* Space between cards */
+}
+
+.product-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.product-card h3 {
+  margin: 0 0 0.5rem 0;
+  color: #3ea5a8;
+}
+.product-card h2 {
+  margin: 0 0 0.5rem 0;
+  color: #3ea5a8;
+}
+
+
+.product-card p {
+  margin: 0.25rem 0;
+}
+
+.product-card input[type="number"] {
+  width: 60px;
+  padding: 0.5rem;
+  margin-right: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.product-card button {
+  background-color: #3ea5a8;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.product-card button:hover {
+  background-color: #3ea5a8;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.pagination button {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin: 0 0.25rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button:hover {
+  background-color: #3ea5a8;
+}
+
+/* Shopping Cart Page */
+.cart {
+  padding: 2rem;
+}
+
+.cart-item {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-item h3 {
+  margin: 0 0 0.5rem 0;
+  color: #3ea5a8;
+}
+
+.cart-item p {
+  margin: 0.25rem 0;
+}
+
+.cart-item input[type="number"] {
+  width: 60px;
+  padding: 0.5rem;
+  margin-right: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.cart-item button {
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cart-item button:hover {
+  background-color: #cc0000;
+}
+
+.cart-total {
+  margin-top: 2rem;
+  text-align: right;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.cart-total button {
+  background-color: #3ea5a8;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cart-total button:hover {
+  background-color: #49474d;
+}
+
+/* Loading and Error Messages */
+.loading, .error {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.25rem;
+}
+
+.error {
+  color: #ff4444;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 400px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal h2 {
+  margin-top: 0;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.modal-actions button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-actions button[type="submit"] {
+  background-color: #3ea5a8;
+  color: white;
+}
+
+.modal-actions button[type="submit"]:hover {
+  background-color: #49474d;
+}
+
+.modal-actions button[type="button"] {
+  background-color: #ddd;
+}
+
+.modal-actions button[type="button"]:hover {
+  background-color: #ccc;
+}

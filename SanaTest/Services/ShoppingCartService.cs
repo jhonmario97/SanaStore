@@ -1,4 +1,6 @@
-﻿using SanaTest.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using SanaTest.Models;
 
 namespace SanaTest.Services
 {
@@ -6,19 +8,23 @@ namespace SanaTest.Services
     public interface IShoppingCartService
     {
         Task AddToCartAsync(int productId, int quantity);
-        Task<IEnumerable<CartItem>> GetCartItemsAsync();
+
         Task UpdateCartItemQuantityAsync(int productId, int quantity);
         Task RemoveCartItemAsync(int productId);
-        Task ProcessOrderAsync(int customerId);
+        Task<Customer> CreateCustomer(Customer customer);
+        Task ProcessOrderAsync(Customer customer);
+        Task<IEnumerable<CartItem>> GetCartItemsAsync();
     }
     public class ShoppingCartService : IShoppingCartService
     {
         private readonly AppDbContext _context;
-        private readonly List<CartItem> _cartItems = new List<CartItem>();
+        private readonly IMemoryCache _cache;
+        private const string CartCacheKey = "CartItems";
 
-        public ShoppingCartService(AppDbContext context)
+        public ShoppingCartService(AppDbContext context, IMemoryCache cache)
         {
             _context = context;
+            _cache = cache;
         }
 
         public async Task AddToCartAsync(int productId, int quantity)
@@ -28,15 +34,19 @@ namespace SanaTest.Services
             {
                 throw new InvalidOperationException("Product not found or insufficient stock.");
             }
-            //check if item exists on cartItems if not create item
-            var existingItem = _cartItems.FirstOrDefault(item => item.ProductId == productId);
+
+            // gets cart items from cache
+            var cartItems = _cache.Get<List<CartItem>>(CartCacheKey) ?? new List<CartItem>();
+
+            // Check if item exists in cart
+            var existingItem = cartItems.FirstOrDefault(item => item.ProductId == productId);
             if (existingItem != null)
             {
                 existingItem.Quantity += quantity;
             }
             else
             {
-                _cartItems.Add(new CartItem
+                cartItems.Add(new CartItem
                 {
                     ProductId = productId,
                     ProductName = product.Title,
@@ -44,30 +54,39 @@ namespace SanaTest.Services
                     Quantity = quantity
                 });
             }
+
+            // Save updated  to cache
+            _cache.Set(CartCacheKey, cartItems);
         }
 
         public Task<IEnumerable<CartItem>> GetCartItemsAsync()
         {
-            return Task.FromResult(_cartItems.AsEnumerable());
+            var cartItems = _cache.Get<List<CartItem>>(CartCacheKey) ?? new List<CartItem>();
+            return Task.FromResult(cartItems.AsEnumerable());
         }
 
         public Task UpdateCartItemQuantityAsync(int productId, int quantity)
         {
-            var item = _cartItems.FirstOrDefault(i => i.ProductId == productId);
+            var cartItems = _cache.Get<List<CartItem>>(CartCacheKey) ?? new List<CartItem>();
+            var item = cartItems.FirstOrDefault(i => i.ProductId == productId);
             if (item != null)
             {
                 item.Quantity = quantity;
             }
+            // Save updated  to cache
+            _cache.Set(CartCacheKey, cartItems);
             return Task.CompletedTask;
         }
 
         public Task RemoveCartItemAsync(int productId)
         {
-            var item = _cartItems.FirstOrDefault(i => i.ProductId == productId);
+            var cartItems = _cache.Get<List<CartItem>>(CartCacheKey) ?? new List<CartItem>();
+            var item = cartItems.FirstOrDefault(i => i.ProductId == productId);
             if (item != null)
             {
-                _cartItems.Remove(item);
+                cartItems.Remove(item);
             }
+            _cache.Set(CartCacheKey, cartItems);
             return Task.CompletedTask;
         }
 
@@ -77,20 +96,50 @@ namespace SanaTest.Services
             return product != null && product.Stock >= quantity;
         }
 
-        public async Task ProcessOrderAsync(int customerId)
+        public async Task<Customer> CreateCustomer(Customer customer)
         {
+            var item =  _context.Customers.Where(c => c.DocumentNumber == customer.DocumentNumber).FirstOrDefault();
+            if (item == null)
+            {
+                _context.Customers.Add(customer);
+                await _context.SaveChangesAsync();
+                return customer;
+            }
+            else
+            {
+                item.FirstName = customer.FirstName;
+                item.LastName = customer.LastName;
+                item.Email = customer.Email;    
+                item.Address = customer.Address;
+                item.ZipCode = customer.ZipCode;
+                await _context.SaveChangesAsync();
+                return item;
+            }
+           
+        }
+
+
+        public async Task ProcessOrderAsync(Customer customer)
+        {
+
+            customer = await CreateCustomer(customer);
+
+           
+
+            var cartItems = _cache.Get<List<CartItem>>(CartCacheKey) ?? new List<CartItem>();
+
             //set order information 
             var order = new Order
             {
-                CustomerId = customerId,
+                CustomerId = customer.CustomerId,
                 OrderDate = DateTime.UtcNow,
-                TotalAmount = _cartItems.Sum(item => item.Price * item.Quantity)
+                TotalAmount = cartItems.Sum(item => item.Price * item.Quantity)
             };
 
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
             //set order detail information  from  cartItems
-            foreach (var item in _cartItems)
+            foreach (var item in cartItems)
             {
                 _context.OrderDetails.Add(new OrderDetail
                 {
@@ -107,7 +156,9 @@ namespace SanaTest.Services
             }
 
             await _context.SaveChangesAsync();
-            _cartItems.Clear();
+            cartItems.Clear();
+            _cache.Set(CartCacheKey, cartItems);
+           
         }
 
     

@@ -33,15 +33,6 @@ namespace SanaTest.Controllers
             return Ok(products);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProductById(int id)
-        {
-            var product = await _productService.GetProductByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return Ok(product);
-        }
+
     }
 }

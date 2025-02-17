@@ -4,6 +4,8 @@ using SanaTest.Services;
 
 namespace SanaTest.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class ShoppingCartController : ControllerBase
     {
         private readonly IShoppingCartService _shoppingCartService;
@@ -24,11 +26,16 @@ namespace SanaTest.Controllers
             await _shoppingCartService.AddToCartAsync(productId, quantity);
             return Ok();
         }
-
-        [HttpPost("save")]
-        public async Task<ActionResult> ProcessOrder(int customerId)
+        [HttpPut("update")]
+        public async Task<ActionResult> UpdateCart(int productId, int quantity)
         {
-            await _shoppingCartService.ProcessOrderAsync(customerId);
+            await _shoppingCartService.UpdateCartItemQuantityAsync(productId, quantity);
+            return Ok();
+        }
+        [HttpPost("save")]
+        public async Task<ActionResult> ProcessOrder(Customer customer)
+        {
+            await _shoppingCartService.ProcessOrderAsync(customer);
             return Ok();
         }
 
@@ -36,7 +43,7 @@ namespace SanaTest.Controllers
         public async Task<ActionResult> RemoveCartItem(int productId)
         {
             await _shoppingCartService.RemoveCartItemAsync(productId);
-            return Ok();
+            return Ok(new CartItem { ProductId=productId} );
         }
 
     }
